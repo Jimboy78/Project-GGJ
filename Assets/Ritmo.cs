@@ -5,7 +5,7 @@ using UnityEngine;
 public class Ritmo : MonoBehaviour
 {    
 
-    public int wincon = 9;
+    public int wincon = 8;
     public int losecon = 5;
     //Contadores de victoria, a cada uno se acelera la musica
     private int wincounter;
@@ -41,10 +41,24 @@ public class Ritmo : MonoBehaviour
     public float speed_increase = 0.05f;
     //tolerancia (hacia cada lado) de la ventana de hiteo, en segundos
     public float hit_window = 0.3f;
+
+    public GameObject fondo;
+
+    public GameObject fondo_izq;
+    
+    public GameObject fondo_der;
+
     void Start()
     {
         //Importo el objeto Boton
         boton = GameObject.Find("Boton");
+
+        fondo = GameObject.Find("Background");
+
+        fondo_izq = GameObject.Find("Background_izq");
+
+        fondo_der = GameObject.Find("Background_der");
+
         //Periodo esperado del beat
         period = (bpm/60f)*0.5f;
         //Velocidad
@@ -56,6 +70,9 @@ public class Ritmo : MonoBehaviour
         rate4win = 0.7f;
         current_hit = 0;
         current_beats = 0;
+            
+        fondo_izq.GetComponent<Scroller>().base_accel(0.2f);
+        fondo_der.GetComponent<Scroller>().base_accel(0.2f);
     }
 
     // Update is called once per frame
@@ -69,26 +86,36 @@ public class Ritmo : MonoBehaviour
             note_played =true;
             current_hit += 1;
         }
-
-        //Como hay 1 hit por segundo, si pasaron mas de 10+la ventana de hit 
-        //(osea perdiste la oportunidad para el ultimo golpe o lo pegaste)
+        //Fin de bloque
         if(current_beats == beat_per_lvl && !score_changed){
             score_changed = true;
+
+       
+
             Debug.Log("IF =  " + beat_per_lvl*rate4win +"current hit" + current_hit +" current_beats  "+current_beats);
+
             if(beat_per_lvl*rate4win<=current_hit){
                 Debug.Log(maintrack.pitch +  "speed " + speed_increase);
 
                 maintrack.pitch += speed_increase;
                 wincounter += 1;
+                fondo.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
+                fondo_izq.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
+                fondo_der.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
+
             }
             else{
+                if(current_hit == 0){
+                    losecounter +=1;
+                }
                 losecounter += 1;
             }
+
             current_hit = 0;
             current_beats = 0;
             Debug.Log("Win=" + wincounter + "Lose=" + losecounter);
         }
-
+        //ventanas de hiteo
         if((play_time % period) < hit_window && !note_played){
             boton.GetComponent<Boton>().Color(255,0,255,1);
             can_hit = true;
@@ -106,11 +133,11 @@ public class Ritmo : MonoBehaviour
 ;
             boton.GetComponent<Boton>().Color(0,0,0,1);
         }
-
-        if(wincounter == wincon){
+        //Win - Lose
+        if(wincounter > wincon){
             Debug.Log("Ganaste perro");
         }
-        else if( losecounter == losecon){
+        else if( losecounter > losecon){
             Debug.Log("Perdiste perro");
         }
     }
