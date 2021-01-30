@@ -246,7 +246,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 24300002, guid: be6bc1d1468237c14b2970711be1a230, type: 2}
-  m_audioClip: {fileID: 8300000, guid: 1a0c9f93fafd4060a8056fb9a015fbe2, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 72c104bea283bc088af9f804e55e3e9d, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -358,13 +358,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1e4460cd319e93b40a3be349f387363d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bpm: 120
-  period: 0
+  wincon: 9
+  losecon: 5
+  rate4win: 0
   play_time: 0
   maintrack: {fileID: 227354554}
-  mainclip: {fileID: 8300000, guid: 1a0c9f93fafd4060a8056fb9a015fbe2, type: 3}
-  boton: {fileID: 0}
-  hit_window: 0.2
+  mainclip: {fileID: 8300000, guid: 72c104bea283bc088af9f804e55e3e9d, type: 3}
+  boton: {fileID: 169310723}
+  speed_increase: 0.05
+  hit_window: 0.3
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -558,5 +560,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   scrollSpeed: 1
-  vertical_offset: 0
-  vertical_speed: 0.5
