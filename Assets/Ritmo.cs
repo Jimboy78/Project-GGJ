@@ -19,6 +19,9 @@ public class Ritmo : MonoBehaviour
     private int current_hit;
     //Cantidad de beats que va en en general el lvl
     private int current_beats;
+    //Cantidad de beats que erraste en este lvl
+    private int current_misses;
+
     private float bpm = 120f;
 
     private float period;
@@ -40,7 +43,7 @@ public class Ritmo : MonoBehaviour
     bool beat_changed = false;
     public float speed_increase = 0.05f;
     //tolerancia (hacia cada lado) de la ventana de hiteo, en segundos
-    public float hit_window = 0.3f;
+    public float hit_window = 0.2f;
 
     public GameObject fondo;
 
@@ -48,8 +51,26 @@ public class Ritmo : MonoBehaviour
     
     public GameObject fondo_der;
 
+    public GameObject Biome_change;
+/*
+    public Material Bioma2;
+
+    public Material Piedra2_izq;
+
+    public Material Piedra2_der;
+*/
+    public List<Material> Biomas = new List<Material>();
+
+    public List<Material> Biomas_Paredes = new List<Material>();
+
     void Start()
     {
+        Biomas.Add((Material)Resources.Load("Bioma1", typeof(Material)));
+        
+        Biomas_Paredes.Add((Material)Resources.Load("Bioma1", typeof(Material)));
+
+        Biomas.Add((Material)Resources.Load("Bioma2", typeof(Material)));
+        
         //Importo el objeto Boton
         boton = GameObject.Find("Boton");
 
@@ -59,6 +80,8 @@ public class Ritmo : MonoBehaviour
 
         fondo_der = GameObject.Find("Background_der");
 
+        Biome_change = GameObject.Find("Biome_change");
+
         //Periodo esperado del beat
         period = (bpm/60f)*0.5f;
         //Velocidad
@@ -67,12 +90,14 @@ public class Ritmo : MonoBehaviour
         wincounter = 0;
         losecounter = 0;
         beat_per_lvl = 10;
-        rate4win = 0.7f;
+        rate4win = 0.7f; //0.7f
         current_hit = 0;
         current_beats = 0;
+        current_misses =0;
             
         fondo_izq.GetComponent<Scroller>().base_accel(0.2f);
         fondo_der.GetComponent<Scroller>().base_accel(0.2f);
+        fondo_der.GetComponent<Scroller>().flip();
     }
 
     // Update is called once per frame
@@ -86,22 +111,26 @@ public class Ritmo : MonoBehaviour
             note_played =true;
             current_hit += 1;
         }
+        else if(Input.GetKeyDown("space")){
+            current_misses +=1;
+        }
         //Fin de bloque
-        if(current_beats == beat_per_lvl && !score_changed){
+        if((current_beats == beat_per_lvl  || current_misses>= (beat_per_lvl-(rate4win*beat_per_lvl)) ) && !score_changed){
             score_changed = true;
 
-       
-
-            Debug.Log("IF =  " + beat_per_lvl*rate4win +"current hit" + current_hit +" current_beats  "+current_beats);
+            Debug.Log($"IF =  {beat_per_lvl*rate4win} current hit {current_hit} current_misses {current_misses} current beat {current_beats}");
 
             if(beat_per_lvl*rate4win<=current_hit){
                 Debug.Log(maintrack.pitch +  "speed " + speed_increase);
 
-                maintrack.pitch += speed_increase;
+                //StartCoroutine(Biome_change.GetComponent<Flash>().flashear());
                 wincounter += 1;
+                fondo.GetComponent<MeshRenderer> ().material = Biomas[wincounter];
+                maintrack.pitch += speed_increase;
                 fondo.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
                 fondo_izq.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
                 fondo_der.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
+                
 
             }
             else{
@@ -113,6 +142,7 @@ public class Ritmo : MonoBehaviour
 
             current_hit = 0;
             current_beats = 0;
+            current_misses = 0;
             Debug.Log("Win=" + wincounter + "Lose=" + losecounter);
         }
         //ventanas de hiteo
@@ -131,7 +161,7 @@ public class Ritmo : MonoBehaviour
             can_hit=false;
             note_played = false;
 ;
-            boton.GetComponent<Boton>().Color(0,0,0,1);
+            boton.GetComponent<Boton>().Color(255,255,255,1);
         }
         //Win - Lose
         if(wincounter > wincon){

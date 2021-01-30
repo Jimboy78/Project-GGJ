@@ -22,7 +22,7 @@ public class Scroller : MonoBehaviour
     {
         offset += (Time.deltaTime * scrollSpeed);
         mat.SetTextureOffset("_MainTex",new Vector2(0,offset));
-        Debug.Log(scrollSpeed); 
+        //Debug.Log(scrollSpeed); 
 
     }
 
@@ -32,5 +32,10 @@ public class Scroller : MonoBehaviour
 
     public void base_accel(float p){
         scrollSpeed *= (1f+p); 
+    }
+
+    public void flip(){
+        Material mat = GetComponent<Renderer>().material;
+        mat.SetTextureScale("_MainTex", new Vector2(-1,1));
     }
 }
