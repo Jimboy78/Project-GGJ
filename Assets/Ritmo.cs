@@ -61,16 +61,20 @@ public class Ritmo : MonoBehaviour
 */
     public List<Material> Biomas = new List<Material>();
 
-    public List<Material> Biomas_Paredes = new List<Material>();
+    public List<Material> Biomas_Paredes_der = new List<Material>();
+
+    public List<Material> Biomas_Paredes_izq = new List<Material>();
 
     void Start()
     {
         Biomas.Add((Material)Resources.Load("Bioma1", typeof(Material)));
-        
-        Biomas_Paredes.Add((Material)Resources.Load("Bioma1", typeof(Material)));
+        Biomas_Paredes_der.Add((Material)Resources.Load("B1_PD", typeof(Material)));
+        Biomas_Paredes_izq.Add((Material)Resources.Load("B1_PI", typeof(Material)));
 
         Biomas.Add((Material)Resources.Load("Bioma2", typeof(Material)));
-        
+        Biomas.Add((Material)Resources.Load("Bioma3", typeof(Material)));
+        Biomas.Add((Material)Resources.Load("Bioma4", typeof(Material)));
+
         //Importo el objeto Boton
         boton = GameObject.Find("Boton");
 
@@ -95,9 +99,9 @@ public class Ritmo : MonoBehaviour
         current_beats = 0;
         current_misses =0;
             
-        fondo_izq.GetComponent<Scroller>().base_accel(0.2f);
-        fondo_der.GetComponent<Scroller>().base_accel(0.2f);
-        fondo_der.GetComponent<Scroller>().flip();
+        fondo_izq.GetComponent<Scroller>().base_accel(0.02f);
+        fondo_der.GetComponent<Scroller>().base_accel(0.02f);
+        //fondo_der.GetComponent<Scroller>().flip();
     }
 
     // Update is called once per frame
@@ -106,35 +110,40 @@ public class Ritmo : MonoBehaviour
         //play_time = (maintrack.timeSamples/mainclip.frequency);
         play_time = ((float)maintrack.timeSamples / (float)mainclip.frequency);
 
-        if(Input.GetKeyDown("space") && can_hit){
+        if(Input.GetKeyDown("space") && can_hit)
+        {
             can_hit = false;
             note_played =true;
             current_hit += 1;
         }
-        else if(Input.GetKeyDown("space")){
+        else if(Input.GetKeyDown("space"))
+        {
             current_misses +=1;
         }
         //Fin de bloque
-        if((current_beats == beat_per_lvl  || current_misses>= (beat_per_lvl-(rate4win*beat_per_lvl)) ) && !score_changed){
+        if((current_beats == beat_per_lvl  || current_misses>= (beat_per_lvl-(rate4win*beat_per_lvl)) ) && !score_changed)
+        {
             score_changed = true;
+            Debug.Log($"IF = {beat_per_lvl*rate4win} || current hit {current_hit} || current_misses {current_misses} || current beat {current_beats}");
 
-            Debug.Log($"IF =  {beat_per_lvl*rate4win} current hit {current_hit} current_misses {current_misses} current beat {current_beats}");
-
-            if(beat_per_lvl*rate4win<=current_hit){
-                Debug.Log(maintrack.pitch +  "speed " + speed_increase);
-
-                //StartCoroutine(Biome_change.GetComponent<Flash>().flashear());
+            if(beat_per_lvl*rate4win<=current_hit)
+            {
                 wincounter += 1;
-                fondo.GetComponent<MeshRenderer> ().material = Biomas[wincounter];
+                Debug.Log($"wincounter: {wincounter} || wincounter % 2: {wincounter % 2}");
+                if ((wincounter < (Biomas.Count)*2) && ((wincounter % 2) == 0))
+                {
+                    Debug.Log($"IN!");
+                    fondo.GetComponent<Scroller>().update_texture(Biomas[wincounter/2].GetTexture("_MainTex"));
+                }
                 maintrack.pitch += speed_increase;
                 fondo.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
                 fondo_izq.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
                 fondo_der.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
-                
-
             }
-            else{
-                if(current_hit == 0){
+            else
+            {
+                if(current_hit == 0)
+                {
                     losecounter +=1;
                 }
                 losecounter += 1;
@@ -146,10 +155,12 @@ public class Ritmo : MonoBehaviour
             Debug.Log("Win=" + wincounter + "Lose=" + losecounter);
         }
         //ventanas de hiteo
-        if((play_time % period) < hit_window && !note_played){
+        if((play_time % period) < hit_window && !note_played)
+        {
             boton.GetComponent<Boton>().Color(255,0,255,1);
             can_hit = true;
-            if(!beat_changed){
+            if(!beat_changed)
+            {
                 current_beats +=1;
                 beat_changed = true;
                 score_changed = false;
