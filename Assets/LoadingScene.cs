@@ -9,7 +9,7 @@ public class LoadingScene : MonoBehaviour
     IEnumerator MoveToMenu()
     {
         //yield on a new YieldInstruction that waits for 5 seconds.
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(5);
         SceneManager.LoadScene("MenuScene");
     }
 

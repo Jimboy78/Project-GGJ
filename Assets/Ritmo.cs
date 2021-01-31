@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+
 
 public class Ritmo : MonoBehaviour
 {    
@@ -209,9 +211,20 @@ public class Ritmo : MonoBehaviour
         //Win - Lose
         if(wincounter > wincon){
             Debug.Log("Ganaste perro");
+            StartCoroutine(ChangeSceneWithDelay("Victory"));
         }
         else if( losecounter > losecon){
+
             Debug.Log("Perdiste perro");
+            StartCoroutine(ChangeSceneWithDelay("GameOver"));
         }
     }
+
+    IEnumerator ChangeSceneWithDelay(string name)
+    {
+        //yield on a new YieldInstruction that waits for 5 seconds.
+        yield return new WaitForSeconds(3);
+        SceneManager.LoadScene(name);
+    }
+
 }
