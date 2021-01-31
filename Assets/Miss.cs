@@ -9,12 +9,17 @@ public class Miss : MonoBehaviour
     private GameObject ritmo;
     [System.NonSerialized]
     public float step;
+    public AudioSource source;
+    private List<AudioClip> VoiceLines = new List<AudioClip>();
     void Start()
     {
         bat = GameObject.Find("Lost");
         ritmo = GameObject.Find("track120bpm");
-        step = Mathf.Abs(bat.transform.position.y - transform.position.y) / ritmo.GetComponent<Ritmo>().losecon;
-        Debug.Log(step);
+        VoiceLines.Add((AudioClip)Resources.Load("Escape", typeof(AudioClip)));
+        VoiceLines.Add((AudioClip)Resources.Load("HAHAHA", typeof(AudioClip)));
+        VoiceLines.Add((AudioClip)Resources.Load("LetsPlay", typeof(AudioClip)));
+        VoiceLines.Add((AudioClip)Resources.Load("TiredYet", typeof(AudioClip)));
+
     }
 
     // Update is called once per frame
@@ -25,7 +30,21 @@ public class Miss : MonoBehaviour
 
     public IEnumerator flameo()
     {
-        yield return new WaitForSeconds(0.01f);
+        int id = 2;
+        source.clip = VoiceLines[id];
+        source.Play();
+        while (true)
+        {
+            yield return new WaitForSeconds(Random.Range(15f,20f));
+            int i = (int)Random.Range(0f, (float)(VoiceLines.Count - 0.01f));
+            while(i == id)
+            {
+             i = (int)Random.Range(0f, (float)(VoiceLines.Count - 0.01f));
+            }
+            id = i;
+            source.clip = VoiceLines[i];
+            source.Play();
+        }
     }
 
 }

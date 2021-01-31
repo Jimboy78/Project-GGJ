@@ -5,8 +5,8 @@ using UnityEngine;
 public class Ritmo : MonoBehaviour
 {    
 
-    public int wincon = 8;
-    public int losecon = 5;
+    public int wincon = 7;
+    public int losecon = 4;
     //Contadores de victoria, a cada uno se acelera la musica
     private int wincounter;
     //Contadores de derrota , a cada uno se acerca mas el bicho
@@ -52,13 +52,11 @@ public class Ritmo : MonoBehaviour
     public GameObject fondo_der;
 
     public GameObject Biome_change;
-/*
-    public Material Bioma2;
 
-    public Material Piedra2_izq;
+    public GameObject Lost;
 
-    public Material Piedra2_der;
-*/
+    public GameObject Miss;
+
     public List<Material> Biomas = new List<Material>();
 
     public List<Material> Biomas_Paredes_der = new List<Material>();
@@ -86,6 +84,10 @@ public class Ritmo : MonoBehaviour
 
         Biome_change = GameObject.Find("Biome_change");
 
+        Lost = GameObject.Find("Lost");
+
+        Miss = GameObject.Find("Miss");
+
         //Periodo esperado del beat
         period = (bpm/60f)*0.5f;
         //Velocidad
@@ -101,13 +103,11 @@ public class Ritmo : MonoBehaviour
             
         fondo_izq.GetComponent<Scroller>().base_accel(0.02f);
         fondo_der.GetComponent<Scroller>().base_accel(0.02f);
-        //fondo_der.GetComponent<Scroller>().flip();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //play_time = (maintrack.timeSamples/mainclip.frequency);
         play_time = ((float)maintrack.timeSamples / (float)mainclip.frequency);
 
         if(Input.GetKeyDown("space") && can_hit)
@@ -126,25 +126,57 @@ public class Ritmo : MonoBehaviour
             score_changed = true;
             Debug.Log($"IF = {beat_per_lvl*rate4win} || current hit {current_hit} || current_misses {current_misses} || current beat {current_beats}");
 
-            if(beat_per_lvl*rate4win<=current_hit)
+            //power up
+            if (beat_per_lvl * rate4win <= current_hit)
             {
                 wincounter += 1;
-                Debug.Log($"wincounter: {wincounter} || wincounter % 2: {wincounter % 2}");
-                if ((wincounter < (Biomas.Count)*2) && ((wincounter % 2) == 0))
+                if ((wincounter < (Biomas.Count) * 2) && ((wincounter % 2) == 0))
                 {
-                    Debug.Log($"IN!");
-                    fondo.GetComponent<Scroller>().update_texture(Biomas[wincounter/2].GetTexture("_MainTex"));
+                    fondo.GetComponent<Scroller>().update_texture(Biomas[wincounter / 2].GetTexture("_MainTex"));
                 }
                 maintrack.pitch += speed_increase;
-                fondo.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
-                fondo_izq.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
-                fondo_der.GetComponent<Scroller>().accel_speed(speed_increase*wincounter);
+                fondo.GetComponent<Scroller>().accel_speed(speed_increase * wincounter);
+                fondo_izq.GetComponent<Scroller>().accel_speed(speed_increase * wincounter);
+                fondo_der.GetComponent<Scroller>().accel_speed(speed_increase * wincounter);
             }
+
+            //power down
             else
             {
-                if(current_hit == 0)
+                var step = Lost.GetComponent<LostController>().step;
+                if (losecounter == 0)
                 {
-                    losecounter +=1;
+                    StartCoroutine(Miss.GetComponent<Miss>().flameo());
+                }
+
+                //critical hit!
+                if (current_hit == 0)
+                {
+                    losecounter += 1;
+                    StartCoroutine(
+                        Lost.GetComponent<LostController>().SmoothMovement(
+                            Lost.GetComponent<Rigidbody2D>(),
+                            new Vector2(
+                                Lost.GetComponent<Rigidbody2D>().transform.position.x,
+                                -step
+                            ),
+                            step*2f
+                        )
+                    );
+                }
+                //normal
+                else
+                {
+                    StartCoroutine(
+                        Lost.GetComponent<LostController>().SmoothMovement(
+                            Lost.GetComponent<Rigidbody2D>(),
+                            new Vector2(
+                                Lost.GetComponent<Rigidbody2D>().transform.position.x,
+                                -step
+                            ),
+                            step
+                        )
+                    );
                 }
                 losecounter += 1;
             }
