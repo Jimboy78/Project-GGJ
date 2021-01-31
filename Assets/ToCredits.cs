@@ -21,7 +21,7 @@ public class ToCredits : MonoBehaviour
 
     void Update()
     {
-        if (Input.anyKey && !(Input.GetKey("space") || Input.GetKey("up") || Input.GetKey("down") || Input.GetKey("left") || Input.GetKey("right") ))
+        if (Input.anyKey && !(Input.GetKey("space") || Input.GetKey("up")|| Input.GetKey("a") || Input.GetKey("d") || Input.GetKey("down") || Input.GetKey("left") || Input.GetKey("right") ))
         {
             StartCoroutine(MoveToMenu());
         }
