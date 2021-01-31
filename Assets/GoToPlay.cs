@@ -19,7 +19,7 @@ public class GoToPlay : MonoBehaviour
     IEnumerator MoveToMenu()
     {
         //yield on a new YieldInstruction that waits for 5 seconds.
-        yield return new WaitForSeconds(2.5f);
+        yield return new WaitForSeconds(3.5f);
         SceneManager.LoadScene("GameplayScene");
     }
 }
