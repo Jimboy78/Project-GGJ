@@ -6,7 +6,7 @@ public class LostController : MonoBehaviour
 {
 
     private GameObject miss;
-    private GameObject ritmo;
+    Ritmo ritmo;
     public AnimationCurve moveCurve;
     [System.NonSerialized]
     public float step;
@@ -15,6 +15,9 @@ public class LostController : MonoBehaviour
     SpriteRenderer spriteRenderer;
 
     bool checkLeftFlag, checkRightFlag;
+
+    private int colCounter=0;
+
 
     [SerializeField]
     Transform leftCheck;
@@ -28,15 +31,15 @@ public class LostController : MonoBehaviour
     void Start()
     {
         miss = GameObject.Find("Miss");
-        ritmo = GameObject.Find("track120bpm");
+        ritmo = GameObject.Find("track120bpm").GetComponent<Ritmo>();
         animator = GetComponent<Animator>();
         rb2d = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-
         var missPos = miss.transform.position;
         var missTopPos = missPos + spriteRenderer.bounds.min;
-        step = Mathf.Abs(transform.position.y - missTopPos.y) / ritmo.GetComponent<Ritmo>().losecon;
+        step = Mathf.Abs(transform.position.y - missTopPos.y) / ritmo.losecon;
         Debug.Log(step);
+    
     }
 
 
@@ -84,6 +87,25 @@ public class LostController : MonoBehaviour
             rigidBody.transform.position = newPosition;
             elapsed += Time.deltaTime;
             yield return null;
+        }
+    }
+
+    
+    private void OnTriggerEnter2D(Collider2D other) {
+        if(other.gameObject.name=="Barrel(Clone)")
+            other.gameObject.GetComponent<BarrelScript>().destroyMySelf();
+        if(other.gameObject.name=="Rock(Clone)")
+            other.gameObject.GetComponent<RockScript>().destroyMySelf();
+        if(other.gameObject.name=="Log(Clone)")
+            other.gameObject.GetComponent<LogScript>().destroyMySelf();
+        
+
+        colCounter++;
+
+         
+        if (colCounter>=2){
+            colCounter=0;
+            ritmo.gotHitByObstacle();
         }
     }
 }

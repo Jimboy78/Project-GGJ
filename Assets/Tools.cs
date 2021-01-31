@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-// IEnumerator ChangeSceneWithDelay()
+// IEnumerator DoSomething()
 // {
 //     //yield on a new YieldInstruction that waits for 5 seconds.
-//     Debug.Log("Init counter");
 //     yield return new WaitForSeconds(5);
-//     SceneManager.LoadScene("MenuScene");
-//     Debug.Log("Change scene (?");
+
+//     //Hace algo aca bro, que se yo
 // }
 
-// public void BtnNewScene(){
-//     StartCoroutine(ChangeSceneWithDelay());
+// public void Function(){
+//     StartCoroutine(DoSomething());
 // }

@@ -56,6 +56,7 @@ public class Ritmo : MonoBehaviour
     public GameObject Lost;
 
     public GameObject Miss;
+    public GameObject Found;
 
     public List<Material> Biomas = new List<Material>();
 
@@ -63,6 +64,10 @@ public class Ritmo : MonoBehaviour
 
     public List<Material> Biomas_Paredes_izq = new List<Material>();
 
+    //Propiedad del kake
+    visionScript vision;
+    public Sprite spriteOff;
+    public Sprite spriteOn ;
     void Start()
     {
         Biomas.Add((Material)Resources.Load("Bioma1", typeof(Material)));
@@ -88,6 +93,8 @@ public class Ritmo : MonoBehaviour
 
         Miss = GameObject.Find("Miss");
 
+        Found = GameObject.Find("Found");
+
         //Periodo esperado del beat
         period = (bpm/60f)*0.5f;
         //Velocidad
@@ -103,8 +110,38 @@ public class Ritmo : MonoBehaviour
             
         fondo_izq.GetComponent<Scroller>().base_accel(0.02f);
         fondo_der.GetComponent<Scroller>().base_accel(0.02f);
+
+
+        //ACA ESTA LABURANDO EL KAKE
+        var coso = GameObject.Find("iluminacion");
+        vision = coso.GetComponent<visionScript>(); 
+
+
+        spriteOff = Resources.Load<Sprite>("OFF");
+        spriteOn = Resources.Load<Sprite>("ON");
+
     }
 
+
+
+    public void gotHitByObstacle(){
+
+        losecounter++;
+        var step = Lost.GetComponent<LostController>().step;
+
+        StartCoroutine(
+            Lost.GetComponent<LostController>().SmoothMovement(
+                Lost.GetComponent<Rigidbody2D>(),
+                new Vector2(
+                    Lost.GetComponent<Rigidbody2D>().transform.position.x,
+                    -step
+                ),
+                step
+            )
+        );
+                
+
+    }
     // Update is called once per frame
     void Update()
     {
@@ -115,6 +152,7 @@ public class Ritmo : MonoBehaviour
             can_hit = false;
             note_played =true;
             current_hit += 1;
+            vision.improveSight(); 
         }
         else if(Input.GetKeyDown("space"))
         {
@@ -133,6 +171,18 @@ public class Ritmo : MonoBehaviour
                 if ((wincounter < (Biomas.Count) * 2) && ((wincounter % 2) == 0))
                 {
                     fondo.GetComponent<Scroller>().update_texture(Biomas[wincounter / 2].GetTexture("_MainTex"));
+                    if (wincounter == 4)
+                    {
+                        StartCoroutine(
+                            Found.GetComponent<Found>().SmoothMovement(
+                                Found.transform,
+                                new Vector2(
+                                    Found.transform.position.x, 55
+                                ),
+                            5f
+                        )
+                    );
+                    }
                 }
                 maintrack.pitch += speed_increase;
                 fondo.GetComponent<Scroller>().accel_speed(speed_increase * wincounter);
@@ -189,7 +239,8 @@ public class Ritmo : MonoBehaviour
         //ventanas de hiteo
         if((play_time % period) < hit_window && !note_played)
         {
-            boton.GetComponent<Boton>().Color(255,0,255,1);
+
+            boton.GetComponent<SpriteRenderer>().sprite = spriteOn;
             can_hit = true;
             if(!beat_changed)
             {
@@ -203,8 +254,7 @@ public class Ritmo : MonoBehaviour
             beat_changed = false;
             can_hit=false;
             note_played = false;
-;
-            boton.GetComponent<Boton>().Color(255,255,255,1);
+            boton.GetComponent<SpriteRenderer>().sprite = spriteOff;
         }
         //Win - Lose
         if(wincounter > wincon){
