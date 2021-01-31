@@ -103,7 +103,7 @@ public class LostController : MonoBehaviour
         colCounter++;
 
          
-        if (colCounter>=2){
+        if (colCounter>=4){
             colCounter=0;
             ritmo.gotHitByObstacle();
         }
