@@ -65,4 +65,10 @@ public class LostController : MonoBehaviour
             rb2d.velocity = new Vector2(0, rb2d.velocity.y);
         }
     }
+
+    
+    private void OnTriggerEnter2D(Collider2D other) {
+        
+        Destroy(other.gameObject);
+    }
 }

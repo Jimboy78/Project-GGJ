@@ -27,6 +27,8 @@ public class Ritmo : MonoBehaviour
     private float period;
 
     public float play_time ; //en segundos
+
+    public float pitch;
     
     public AudioSource maintrack;
 
